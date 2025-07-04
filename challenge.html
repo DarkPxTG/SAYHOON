@@ -147,23 +147,23 @@
     const overlay = document.getElementById("overlay");
     const timer = document.getElementById("timer");
     const errorBox = document.getElementById("error");
+    let refreshInterval;
 
     function disableScroll() {
-      // جلوگیری از اسکرول صفحه با موس، صفحه کلید و لمس
       window.scrollTo(0, 0);
-      document.body.style.overflow = 'hidden';
-      window.addEventListener('scroll', scrollHandler);
-      window.addEventListener('wheel', wheelHandler, { passive: false });
-      window.addEventListener('touchmove', touchMoveHandler, { passive: false });
-      window.addEventListener('keydown', keyDownHandler, { passive: false });
+      document.body.style.overflow = "hidden";
+      window.addEventListener("scroll", scrollHandler);
+      window.addEventListener("wheel", wheelHandler, { passive: false });
+      window.addEventListener("touchmove", touchMoveHandler, { passive: false });
+      window.addEventListener("keydown", keyDownHandler, { passive: false });
     }
 
     function enableScroll() {
-      document.body.style.overflow = '';
-      window.removeEventListener('scroll', scrollHandler);
-      window.removeEventListener('wheel', wheelHandler);
-      window.removeEventListener('touchmove', touchMoveHandler);
-      window.removeEventListener('keydown', keyDownHandler);
+      document.body.style.overflow = "";
+      window.removeEventListener("scroll", scrollHandler);
+      window.removeEventListener("wheel", wheelHandler);
+      window.removeEventListener("touchmove", touchMoveHandler);
+      window.removeEventListener("keydown", keyDownHandler);
     }
 
     function scrollHandler(e) {
@@ -179,7 +179,6 @@
     }
 
     function keyDownHandler(e) {
-      // کلیدهای اسکرول: PageUp, PageDown, Arrow keys, Space
       const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40];
       if (keys.includes(e.keyCode)) {
         e.preventDefault();
@@ -192,7 +191,7 @@
         startTimer();
         overlay.style.display = "flex";
         errorBox.innerText = "";
-        disableScroll(); // جلوگیری از اسکرول
+        disableScroll();
         startAutoRefresh();
       } else {
         errorBox.innerText = "❌ پاسخ اشتباه است! لطفاً دوباره تلاش کن.";
@@ -200,21 +199,21 @@
     }
 
     function startTimer() {
-      let start = localStorage.getItem("challengeStart");
-      if (!start) {
-        start = Date.now();
-        localStorage.setItem("challengeStart", start);
-      }
+      const start = Date.now();
+      localStorage.setItem("challengeStart", start);
       updateTimer();
     }
 
     function updateTimer() {
       const start = parseInt(localStorage.getItem("challengeStart"), 10);
       const now = Date.now();
-      const diff = 24 * 60 * 60 * 1000 - (now - start);
+      const diff = 40 * 1000 - (now - start);
       if (diff <= 0) {
         timer.innerText = "00:00:00";
-        enableScroll(); // تایمر تموم شده، اسکرول رو فعال کن
+        enableScroll();
+        overlay.style.display = "none";
+        clearInterval(refreshInterval);
+        localStorage.removeItem("challengeStart");
         return;
       }
       const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -224,13 +223,11 @@
       requestAnimationFrame(updateTimer);
     }
 
-    // رفرش خودکار صفحه هر 1 دقیقه (60000 میلی‌ثانیه)
-    let refreshInterval;
     function startAutoRefresh() {
       if (refreshInterval) return;
       refreshInterval = setInterval(() => {
         location.reload();
-      }, 60000);
+      }, 40000);
     }
 
     window.onload = () => {

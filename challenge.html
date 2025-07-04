@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="فا">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>چالش بزرگ</title>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     * {
       box-sizing: border-box;
@@ -126,8 +126,8 @@
   <div class="challenge-box">
     <h2>سوال امروز:</h2>
     <p>عدد بعدی در دنباله چیست؟ <br> 2، 4، 8، 16، ؟</p>
-    <input id="answer" type="text" placeholder="پاسخ خود را وارد کنید...">
-    <br>
+    <input id="answer" type="text" placeholder="پاسخ خود را وارد کنید..." />
+    <br />
     <button onclick="submitAnswer()">ارسال پاسخ</button>
     <div class="error" id="error"></div>
   </div>
@@ -138,7 +138,7 @@
   </div>
 
   <div class="footer">
-    شرکت در چالش <strong>کاملاً رایگان</strong> است. پاسخ‌های درست در پایان روز بررسی می‌شن و بین اونا قرعه‌کشی میشه. <br>
+    شرکت در چالش <strong>کاملاً رایگان</strong> است. پاسخ‌های درست در پایان روز بررسی می‌شن و بین اونا قرعه‌کشی میشه. <br />
     برای دیدن برندگان نهایی و دریافت جایزه به کانال تلگرام ما سر بزن: <strong>@YourChannel</strong> 🏆
   </div>
 
@@ -148,12 +148,52 @@
     const timer = document.getElementById("timer");
     const errorBox = document.getElementById("error");
 
+    function disableScroll() {
+      // جلوگیری از اسکرول صفحه با موس، صفحه کلید و لمس
+      window.scrollTo(0, 0);
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('scroll', scrollHandler);
+      window.addEventListener('wheel', wheelHandler, { passive: false });
+      window.addEventListener('touchmove', touchMoveHandler, { passive: false });
+      window.addEventListener('keydown', keyDownHandler, { passive: false });
+    }
+
+    function enableScroll() {
+      document.body.style.overflow = '';
+      window.removeEventListener('scroll', scrollHandler);
+      window.removeEventListener('wheel', wheelHandler);
+      window.removeEventListener('touchmove', touchMoveHandler);
+      window.removeEventListener('keydown', keyDownHandler);
+    }
+
+    function scrollHandler(e) {
+      window.scrollTo(0, 0);
+    }
+
+    function wheelHandler(e) {
+      e.preventDefault();
+    }
+
+    function touchMoveHandler(e) {
+      e.preventDefault();
+    }
+
+    function keyDownHandler(e) {
+      // کلیدهای اسکرول: PageUp, PageDown, Arrow keys, Space
+      const keys = [32, 33, 34, 35, 36, 37, 38, 39, 40];
+      if (keys.includes(e.keyCode)) {
+        e.preventDefault();
+      }
+    }
+
     function submitAnswer() {
       const input = document.getElementById("answer").value.trim();
       if (input === correctAnswer) {
         startTimer();
         overlay.style.display = "flex";
         errorBox.innerText = "";
+        disableScroll(); // جلوگیری از اسکرول
+        startAutoRefresh();
       } else {
         errorBox.innerText = "❌ پاسخ اشتباه است! لطفاً دوباره تلاش کن.";
       }
@@ -174,20 +214,32 @@
       const diff = 24 * 60 * 60 * 1000 - (now - start);
       if (diff <= 0) {
         timer.innerText = "00:00:00";
+        enableScroll(); // تایمر تموم شده، اسکرول رو فعال کن
         return;
       }
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      timer.innerText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      timer.innerText = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
       requestAnimationFrame(updateTimer);
+    }
+
+    // رفرش خودکار صفحه هر 1 دقیقه (60000 میلی‌ثانیه)
+    let refreshInterval;
+    function startAutoRefresh() {
+      if (refreshInterval) return;
+      refreshInterval = setInterval(() => {
+        location.reload();
+      }, 60000);
     }
 
     window.onload = () => {
       const start = localStorage.getItem("challengeStart");
       if (start) {
         overlay.style.display = "flex";
+        disableScroll();
         updateTimer();
+        startAutoRefresh();
       }
     };
   </script>

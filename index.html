@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورود / ثبت‌نام</title>
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Vazirmatn', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #f1f5f9;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      padding: 2.5rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      max-width: 450px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #facc15;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: none;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    input::placeholder {
+      color: #cbd5e1;
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 2rem;
+      font-size: 1.1rem;
+      background: linear-gradient(to right, #38bdf8, #0ea5e9);
+      border: none;
+      border-radius: 0.75rem;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .toggle-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #60a5fa;
+      cursor: pointer;
+    }
+    .error {
+      color: #f87171;
+      margin-top: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="register">
+    <h2>ثبت‌نام</h2>
+    <input type="text" id="reg-name" placeholder="نام کامل">
+    <input type="text" id="reg-id" placeholder="آیدی تلگرام">
+    <input type="text" id="reg-username" placeholder="نام کاربری تلگرام">
+    <input type="password" id="reg-password" placeholder="رمز عبور">
+    <button onclick="handleRegister()">ثبت‌نام</button>
+    <div class="toggle-link" onclick="switchToLogin()">قبلاً ثبت‌نام کرده‌اید؟ ورود</div>
+    <div class="error" id="reg-error"></div>
+  </div>
+
+  <div class="card" id="login" style="display:none">
+    <h2>ورود</h2>
+    <input type="password" id="login-password" placeholder="رمز عبور">
+    <button onclick="handleLogin()">ورود</button>
+    <div class="toggle-link" onclick="switchToRegister()">حساب ندارید؟ ثبت‌نام</div>
+    <div class="error" id="login-error"></div>
+  </div>
+
+  <script>
+    function switchToLogin() {
+      document.getElementById("register").style.display = "none";
+      document.getElementById("login").style.display = "block";
+    }
+
+    function switchToRegister() {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("register").style.display = "block";
+    }
+
+    function handleRegister() {
+      const name = document.getElementById("reg-name").value.trim();
+      const id = document.getElementById("reg-id").value.trim();
+      const username = document.getElementById("reg-username").value.trim();
+      const password = document.getElementById("reg-password").value.trim();
+      if (!name || !id || !username || !password) {
+        document.getElementById("reg-error").innerText = "لطفاً همه فیلدها را پر کنید.";
+        return;
+      }
+      const data = { name, id, username, password };
+      localStorage.setItem("userData", JSON.stringify(data));
+      switchToLogin();
+    }
+
+    function handleLogin() {
+      const user = JSON.parse(localStorage.getItem("userData"));
+      const entered = document.getElementById("login-password").value.trim();
+      if (!user || entered !== user.password) {
+        document.getElementById("login-error").innerText = "رمز عبور نادرست است.";
+        return;
+      }
+      // هدایت به صفحه اصلی چالش یا قرعه‌کشی:
+      window.location.href = "challenge.html";
+    }
+  </script>
+</body>
+</html>
